@@ -18,3 +18,4 @@ Kamera menggunakan resolusi maksimum yang ditawarkan perangkat, mendukung fokus 
 Hasil disimpan sebagai PNG beresolusi asli di direktori privat aplikasi. Logo resmi, tanggal/waktu dengan zona waktu, koordinat, akurasi, nama petugas, dan identitas XiuMark digambar permanen ke foto. SQLite menyimpan metadata foto dan waktu pengukuran lokasi. Galeri privat dapat menampilkan dan membagikan foto setelah pengguna memilihnya.
 
 PIN/biometrik, proyek, peta MapLibre/vector tiles, pencarian offline, paket peta Indonesia dan installer terverifikasi belum diimplementasikan. Nama administratif tidak tersedia sampai basis data geografis offline ditambahkan; watermark menyatakan keterbatasan ini secara eksplisit. Ukuran APK belum diukur dan target 30 MB belum diverifikasi.
+# xiumark
