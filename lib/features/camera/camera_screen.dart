@@ -7,6 +7,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:path/path.dart' as p;
 
 import '../../data/photo_store.dart';
+import '../location/location_service.dart';
 import '../watermark/watermark_composer.dart';
 
 class CameraScreen extends StatefulWidget {
@@ -31,6 +32,7 @@ class _CameraScreenState extends State<CameraScreen>
   String _officer = 'Petugas';
   List<CameraDescription> _cameras = [];
   int _cameraIndex = 0;
+  final _locationService = const LocationService();
 
   bool get _locationValid =>
       _position != null && _position!.accuracy <= _accuracyLimit;
@@ -60,8 +62,9 @@ class _CameraScreenState extends State<CameraScreen>
       if (savedOfficer.trim().isNotEmpty) _officer = savedOfficer.trim();
       _accuracyLimit = await PhotoStore.instance.accuracyThreshold();
       _cameras = await availableCameras();
-      if (_cameras.isEmpty)
+      if (_cameras.isEmpty) {
         throw StateError('Kamera tidak tersedia pada perangkat ini.');
+      }
       _cameraIndex = _cameras.indexWhere(
         (c) => c.lensDirection == CameraLensDirection.back,
       );
@@ -95,60 +98,20 @@ class _CameraScreenState extends State<CameraScreen>
     if (_locating) return;
     setState(() => _locating = true);
     try {
-      final enabled = await Geolocator.isLocationServiceEnabled();
-      if (!enabled)
-        throw StateError(
-          'Aktifkan layanan lokasi/GPS untuk mengambil foto valid.',
-        );
-      var permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-      }
-      if (permission == LocationPermission.denied ||
-          permission == LocationPermission.deniedForever) {
-        throw StateError(
-          'Izin lokasi diperlukan agar koordinat dapat divalidasi.',
-        );
-      }
-
-      final samples = <Position>[];
-      for (var i = 0; i < 3; i++) {
-        final sample = await Geolocator.getCurrentPosition(
-          locationSettings: const LocationSettings(
-            accuracy: LocationAccuracy.best,
-            timeLimit: Duration(seconds: 20),
-          ),
-        );
-        samples.add(sample);
-        if (i < 2) await Future<void>.delayed(const Duration(seconds: 2));
-      }
-      samples.sort((a, b) => a.accuracy.compareTo(b.accuracy));
-      final best = samples.first;
-      final spread = samples
-          .map(
-            (s) => Geolocator.distanceBetween(
-              best.latitude,
-              best.longitude,
-              s.latitude,
-              s.longitude,
-            ),
-          )
-          .reduce((a, b) => a > b ? a : b);
+      final position = await _locationService.getValidatedFix(
+        accuracyThreshold: _accuracyLimit,
+      );
+      if (mounted) setState(() => _position = position);
+    } on LocationValidationException catch (error) {
       if (mounted) {
-        setState(() => _position = best);
-        if (best.accuracy > _accuracyLimit) {
-          _message(
-            'Akurasi GPS ${best.accuracy.toStringAsFixed(1)} m; target maksimal ${_accuracyLimit.toStringAsFixed(1)} m. Tunggu sinyal lebih baik.',
-          );
-        } else if (spread > _accuracyLimit * 2) {
-          setState(() => _position = null);
-          _message(
-            'Sampel GPS belum stabil (pergeseran ${spread.toStringAsFixed(1)} m). Coba lagi.',
-          );
-        }
+        setState(() => _position = null);
+        _message(error.message);
       }
     } catch (error) {
-      if (mounted) _message(error.toString().replaceFirst('Bad state: ', ''));
+      if (mounted) {
+        setState(() => _position = null);
+        _message('Gagal mendapatkan lokasi: $error');
+      }
     } finally {
       if (mounted) setState(() => _locating = false);
     }
@@ -170,7 +133,9 @@ class _CameraScreenState extends State<CameraScreen>
         !camera.value.isInitialized ||
         position == null ||
         !_locationValid ||
-        _capturing) return;
+        _capturing) {
+      return;
+    }
     setState(() => _capturing = true);
     String? stagedPath;
     try {
@@ -313,7 +278,7 @@ class _CameraScreenState extends State<CameraScreen>
                         final box =
                             previewContext.findRenderObject()! as RenderBox;
                         final point = details.localPosition;
-                        camera!.setFocusPoint(Offset(
+                        camera.setFocusPoint(Offset(
                           (point.dx / box.size.width).clamp(0.0, 1.0),
                           (point.dy / box.size.height).clamp(0.0, 1.0),
                         ));

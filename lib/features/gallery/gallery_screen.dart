@@ -30,10 +30,11 @@ class _GalleryScreenState extends State<GalleryScreen> {
           if (snapshot.connectionState != ConnectionState.done) {
             return const Center(child: CircularProgressIndicator());
           }
-          if (snapshot.hasError)
+          if (snapshot.hasError) {
             return Center(
               child: Text('Galeri tidak dapat dibuka: ${snapshot.error}'),
             );
+          }
           final photos = snapshot.data ?? [];
           if (photos.isEmpty) {
             return const Center(
