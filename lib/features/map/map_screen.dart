@@ -109,7 +109,7 @@ class _MapScreenState extends State<MapScreen> {
                         ),
                     ],
                   ),
-                  RichAttributionWidget(
+                  const RichAttributionWidget(
                     attributions: [
                       TextSourceAttribution('© OpenStreetMap contributors'),
                     ],

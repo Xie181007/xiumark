@@ -335,13 +335,11 @@ class _StatusRow extends StatelessWidget {
     required this.title,
     required this.detail,
     required this.badge,
-    this.warning = false,
   });
   final IconData icon;
   final String title;
   final String detail;
   final String badge;
-  final bool warning;
   @override
   Widget build(BuildContext context) => Container(
         padding: const EdgeInsets.all(14),
@@ -376,16 +374,13 @@ class _StatusRow extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 6),
               decoration: BoxDecoration(
-                color:
-                    warning ? const Color(0xFFFFF3DF) : const Color(0xFFE7F6EF),
+                color: const Color(0xFFE7F6EF),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
                 badge,
-                style: TextStyle(
-                  color: warning
-                      ? const Color(0xFF9B681D)
-                      : const Color(0xFF28764D),
+                style: const TextStyle(
+                  color: Color(0xFF28764D),
                   fontWeight: FontWeight.w700,
                   fontSize: 9,
                 ),
@@ -394,4 +389,11 @@ class _StatusRow extends StatelessWidget {
           ],
         ),
       );
+}
+
+class _Destination {
+  const _Destination(this.label, this.icon);
+
+  final String label;
+  final IconData icon;
 }

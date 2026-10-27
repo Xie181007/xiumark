@@ -135,23 +135,26 @@ class SettingsScreen extends StatelessWidget {
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
           title: const Text('Resolusi kamera'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              for (final entry in options.entries)
-                RadioListTile<String>(
-                  contentPadding: EdgeInsets.zero,
-                  title: Text(entry.value),
-                  value: entry.key,
-                  groupValue: selected,
-                  onChanged: (value) =>
-                      setDialogState(() => selected = value!),
+          content: RadioGroup<String>(
+            groupValue: selected,
+            onChanged: (value) {
+              if (value != null) setDialogState(() => selected = value);
+            },
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for (final entry in options.entries)
+                  RadioListTile<String>(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(entry.value),
+                    value: entry.key,
+                  ),
+                const Text(
+                  'Pilihan maksimum mengikuti batas kamera perangkat. Perubahan berlaku saat kamera dibuka kembali.',
+                  style: TextStyle(color: Color(0xFF71808D), fontSize: 12),
                 ),
-              const Text(
-                'Pilihan maksimum mengikuti batas kamera perangkat. Perubahan berlaku saat kamera dibuka kembali.',
-                style: TextStyle(color: Color(0xFF71808D), fontSize: 12),
-              ),
-            ],
+              ],
+            ),
           ),
           actions: [
             TextButton(
