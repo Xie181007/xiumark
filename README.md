@@ -16,7 +16,7 @@ Android `applicationId` masih bernilai template `com.example.xiumark`. Ganti den
 
 [Unduh APK XiuMark terbaru](https://github.com/Xie181007/xiumark/releases/latest/download/XiuMark.apk)
 
-Tautan akan aktif setelah rilis pertama selesai diterbitkan oleh GitHub Actions.
+Rilis terbaru: [v1.0.3](https://github.com/Xie181007/xiumark/releases/tag/v1.0.3). APK berukuran sekitar 53,6 MB. [Checksum SHA-256](https://github.com/Xie181007/xiumark/releases/download/v1.0.3/SHA256SUMS.txt).
 
 1. Unduh `XiuMark.apk` dari halaman GitHub Releases.
 2. Buka APK di perangkat Android dan ikuti petunjuk instalasi. Jika Android meminta izin, izinkan instalasi aplikasi dari aplikasi sumber unduhan.
@@ -47,11 +47,11 @@ Tambahkan output Base64 dan informasi keystore sebagai **Actions repository secr
 
 Workflow memerlukan izin `contents: write` untuk membuat GitHub Release. GitHub Actions menyediakan token repo dengan izin yang diatur di workflow. [Dokumentasi `GITHUB_TOKEN`](https://docs.github.com/en/actions/concepts/security/github_token)
 
-Setelah menaikkan versi pada `pubspec.yaml`, buat dan dorong tag yang sesuai:
+Setelah menaikkan versi pada `pubspec.yaml`, buat dan dorong tag versi baru (contoh `v1.0.4`):
 
 ```sh
-git tag v1.0.1
-git push origin v1.0.1
+git tag v1.0.4
+git push origin v1.0.4
 ```
 
 Selesai jika job **Build and publish Android APK** berhasil. APK, checksum, dan informasi build akan tersedia pada GitHub Release.
@@ -85,4 +85,3 @@ Kamera menggunakan resolusi maksimum yang ditawarkan perangkat, mendukung fokus 
 Hasil disimpan sebagai PNG beresolusi asli di direktori privat aplikasi. Logo resmi, tanggal/waktu dengan zona waktu, koordinat, akurasi, nama petugas, dan identitas XiuMark digambar permanen ke foto. SQLite menyimpan metadata foto dan waktu pengukuran lokasi. Galeri privat dapat menampilkan dan membagikan foto setelah pengguna memilihnya.
 
 PIN/biometrik, proyek, peta MapLibre/vector tiles, pencarian offline, paket peta Indonesia dan installer terverifikasi belum diimplementasikan. Nama administratif tidak tersedia sampai basis data geografis offline ditambahkan; watermark menyatakan keterbatasan ini secara eksplisit. Ukuran APK belum diukur dan target 30 MB belum diverifikasi.
-# xiumark
