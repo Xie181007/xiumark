@@ -123,4 +123,23 @@ class PhotoStore {
         'settings', {'key': 'gps_accuracy_m', 'value': meters.toString()},
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
+
+  Future<String> cameraResolution() async =>
+      _setting('camera_resolution', 'max');
+
+  Future<void> setCameraResolution(String value) =>
+      _setSetting('camera_resolution', value);
+
+  Future<String> _setting(String key, String fallback) async {
+    final db = await database;
+    final rows = await db.query('settings',
+        where: 'key = ?', whereArgs: [key], limit: 1);
+    return rows.isEmpty ? fallback : rows.first['value'] as String;
+  }
+
+  Future<void> _setSetting(String key, String value) async {
+    final db = await database;
+    await db.insert('settings', {'key': key, 'value': value},
+        conflictAlgorithm: ConflictAlgorithm.replace);
+  }
 }

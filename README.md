@@ -8,6 +8,10 @@ XiuMark adalah aplikasi Android untuk dokumentasi pekerjaan lapangan Telkom Akse
 
 Membantu petugas mendokumentasikan pekerjaan lapangan melalui foto yang dilengkapi informasi waktu, lokasi GPS, dan identitas petugas.
 
+## Peta
+
+Tab **Peta** menampilkan lokasi foto yang tersimpan dan posisi perangkat. Peta dasar OpenStreetMap membutuhkan koneksi internet; data foto tetap disimpan di perangkat. Paket peta offline belum disediakan.
+
 ## Cara mengunduh
 
 [Unduh APK XiuMark](https://github.com/Xie181007/xiumark/releases/latest/download/XiuMark.apk)

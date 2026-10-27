@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:path/path.dart' as p;
 
@@ -20,6 +21,7 @@ class CameraScreen extends StatefulWidget {
 class _CameraScreenState extends State<CameraScreen>
     with WidgetsBindingObserver {
   double _accuracyLimit = 5.0;
+  ResolutionPreset _resolution = ResolutionPreset.max;
   CameraController? _camera;
   Position? _position;
   String? _error;
@@ -61,6 +63,7 @@ class _CameraScreenState extends State<CameraScreen>
       final savedOfficer = await PhotoStore.instance.officerName();
       if (savedOfficer.trim().isNotEmpty) _officer = savedOfficer.trim();
       _accuracyLimit = await PhotoStore.instance.accuracyThreshold();
+      _resolution = _presetFrom(await PhotoStore.instance.cameraResolution());
       _cameras = await availableCameras();
       if (_cameras.isEmpty) {
         throw StateError('Kamera tidak tersedia pada perangkat ini.');
@@ -85,7 +88,7 @@ class _CameraScreenState extends State<CameraScreen>
     await old?.dispose();
     final controller = CameraController(
       _cameras[_cameraIndex],
-      ResolutionPreset.max,
+      _resolution,
       enableAudio: false,
     );
     _camera = controller;
@@ -93,6 +96,14 @@ class _CameraScreenState extends State<CameraScreen>
     _maxZoom = await controller.getMaxZoomLevel();
     if (mounted) setState(() {});
   }
+
+  ResolutionPreset _presetFrom(String value) => switch (value) {
+        'low' => ResolutionPreset.low,
+        'medium' => ResolutionPreset.medium,
+        'high' => ResolutionPreset.high,
+        'veryHigh' => ResolutionPreset.veryHigh,
+        _ => ResolutionPreset.max,
+      };
 
   Future<void> _sampleLocation() async {
     if (_locating) return;
@@ -141,6 +152,7 @@ class _CameraScreenState extends State<CameraScreen>
     try {
       final shot = await camera.takePicture();
       final time = DateTime.now();
+      final locationLabel = await _reverseGeocode(position);
       final directory = await PhotoStore.instance.privatePhotoDirectory();
       final fileName = 'xiumark_${time.microsecondsSinceEpoch}.png';
       final outputPath = p.join(directory, fileName);
@@ -155,6 +167,7 @@ class _CameraScreenState extends State<CameraScreen>
         longitude: position.longitude,
         accuracy: position.accuracy,
         officer: officer,
+        locationLabel: locationLabel,
       );
       stagedPath = watermarked.path;
       await PhotoStore.instance.add(
@@ -216,6 +229,32 @@ class _CameraScreenState extends State<CameraScreen>
       if (mounted) _message('Foto gagal diproses: $error');
     } finally {
       if (mounted) setState(() => _capturing = false);
+    }
+  }
+
+  Future<String?> _reverseGeocode(Position position) async {
+    try {
+      final placemarks = await placemarkFromCoordinates(
+        position.latitude,
+        position.longitude,
+      ).timeout(const Duration(seconds: 5));
+      if (placemarks.isEmpty) return null;
+      final place = placemarks.first;
+      final parts = <String?>[
+        place.street,
+        place.subLocality,
+        place.locality,
+        place.subAdministrativeArea,
+        place.administrativeArea,
+      ]
+          .map((value) => value?.trim())
+          .whereType<String>()
+          .where((value) => value.isNotEmpty)
+          .toSet()
+          .toList();
+      return parts.isEmpty ? null : parts.join(', ');
+    } catch (_) {
+      return null;
     }
   }
 
@@ -476,14 +515,14 @@ class _WatermarkPreview extends StatelessWidget {
           children: [
             Image.asset(
               'assets/images/telkom_akses_logo.png',
-              width: 48,
-              height: 29,
+              width: 76,
+              height: 48,
               fit: BoxFit.contain,
             ),
             const SizedBox(width: 10),
             Expanded(
               child: Text(
-                '${DateTime.now().toLocal()}\n${position == null ? 'Koordinat menunggu GPS' : '${position!.latitude.toStringAsFixed(6)}, ${position!.longitude.toStringAsFixed(6)}  •  ±${position!.accuracy.toStringAsFixed(1)} m'}\n$officer  •  XiuMark',
+                '${DateTime.now().toLocal().toString().substring(0, 19)}\n${position == null ? 'Lokasi menunggu GPS' : '${position!.latitude.toStringAsFixed(6)}, ${position!.longitude.toStringAsFixed(6)}  •  ±${position!.accuracy.toStringAsFixed(1)} m'}\nPetugas: $officer',
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 10,

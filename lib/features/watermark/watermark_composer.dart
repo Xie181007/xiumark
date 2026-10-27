@@ -14,6 +14,7 @@ class WatermarkComposer {
     required double longitude,
     required double accuracy,
     required String officer,
+    String? locationLabel,
   }) async {
     final sourceBytes = await File(sourcePath).readAsBytes();
     final codec = await ui.instantiateImageCodec(sourceBytes);
@@ -37,20 +38,23 @@ class WatermarkComposer {
       logoData.buffer.asUint8List(),
     );
     final logo = (await logoCodec.getNextFrame()).image;
-    final logoHeight = 68 * scale;
-    final logoWidth = logo.width * logoHeight / logo.height;
-    final textLeft = padding + logoWidth + 22 * scale;
+    final logoHeight = 112 * scale;
+    final logoWidth =
+        (logo.width * logoHeight / logo.height).clamp(0.0, size.width * .26);
+    final fittedLogoHeight = logoWidth * logo.height / logo.width;
+    final textLeft = padding + logoWidth + 18 * scale;
     final maxTextWidth = size.width - textLeft - padding;
     final timestamp = _dateTime(takenAt);
     final lines = <String>[
-      'XiuMark  •  Telkom Akses',
+      'DOKUMENTASI LAPANGAN  •  TELKOM AKSES',
       timestamp,
+      if (locationLabel?.trim().isNotEmpty == true)
+        'Lokasi: ${locationLabel!.trim()}',
       '${latitude.toStringAsFixed(6)}, ${longitude.toStringAsFixed(6)}  •  ±${accuracy.toStringAsFixed(1)} m',
       if (officer.trim().isNotEmpty) 'Petugas: ${officer.trim()}',
-      'Lokasi administratif tidak tersedia (data offline belum dipasang)',
     ];
-    final fontSize = 19 * scale;
-    final lineHeight = 26 * scale;
+    final fontSize = 18 * scale;
+    final lineHeight = 25 * scale;
     final panelHeight = padding * 2 + lines.length * lineHeight;
     final panelTop = size.height - panelHeight;
     canvas.drawRect(
@@ -59,9 +63,9 @@ class WatermarkComposer {
     );
     final logoRect = Rect.fromLTWH(
       padding,
-      panelTop + (panelHeight - logoHeight) / 2,
+      panelTop + (panelHeight - fittedLogoHeight) / 2,
       logoWidth,
-      logoHeight,
+      fittedLogoHeight,
     );
     canvas.drawImageRect(
       logo,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../camera/camera_screen.dart';
 import '../gallery/gallery_screen.dart';
+import '../map/map_screen.dart';
 import '../settings/settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -18,8 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _Destination('Beranda', Icons.grid_view_rounded),
     _Destination('Kamera', Icons.photo_camera_outlined),
     _Destination('Galeri', Icons.photo_library_outlined),
-    _Destination('Peta Offline', Icons.map_outlined),
-    _Destination('Proyek', Icons.folder_outlined),
+    _Destination('Peta', Icons.map_outlined),
   ];
 
   @override
@@ -70,7 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           1 => const CameraScreen(),
           2 => const GalleryScreen(),
-          _ => _FeaturePage(destination: _destinations[_selectedIndex]),
+          _ => const MapScreen(),
         },
       ),
       bottomNavigationBar: NavigationBar(
@@ -204,19 +204,11 @@ class _Dashboard extends StatelessWidget {
             ),
             _QuickCard(
               icon: Icons.map_outlined,
-              title: 'Peta offline',
+              title: 'Peta lokasi',
               caption: 'Jelajahi lokasi kerja',
               color: const Color(0xFFE9F6F3),
               iconColor: const Color(0xFF168174),
               onTap: () => onNavigate(3),
-            ),
-            _QuickCard(
-              icon: Icons.folder_open_outlined,
-              title: 'Proyek',
-              caption: 'Kelola pekerjaan',
-              color: const Color(0xFFFFF4E6),
-              iconColor: const Color(0xFFBA7622),
-              onTap: () => onNavigate(4),
             ),
             _QuickCard(
               icon: Icons.tune_rounded,
@@ -239,66 +231,12 @@ class _Dashboard extends StatelessWidget {
         const _StatusRow(
           icon: Icons.location_searching,
           title: 'Lokasi perangkat',
-          detail: 'Perlu izin lokasi saat digunakan',
-          badge: 'Belum aktif',
-          warning: true,
-        ),
-        const SizedBox(height: 9),
-        const _StatusRow(
-          icon: Icons.map_outlined,
-          title: 'Paket peta Indonesia',
-          detail: 'Pasang paket peta untuk akses offline',
-          badge: 'Belum dipasang',
-          warning: true,
+          detail: 'Izin diminta saat posisi dibutuhkan',
+          badge: 'Siap digunakan',
         ),
       ],
     );
   }
-}
-
-class _FeaturePage extends StatelessWidget {
-  const _FeaturePage({required this.destination});
-  final _Destination destination;
-
-  @override
-  Widget build(BuildContext context) => Center(
-        child: Padding(
-          padding: const EdgeInsets.all(32),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 76,
-                height: 76,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE7F3F2),
-                  borderRadius: BorderRadius.circular(24),
-                ),
-                child: Icon(
-                  destination.icon,
-                  size: 34,
-                  color: const Color(0xFF087E83),
-                ),
-              ),
-              const SizedBox(height: 18),
-              Text(
-                destination.label,
-                style: const TextStyle(
-                  fontSize: 23,
-                  fontWeight: FontWeight.w800,
-                  color: Color(0xFF152B43),
-                ),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Fondasi aplikasi siap. Fitur ini akan tersedia pada tahap pengembangan berikutnya.',
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Color(0xFF71808D), height: 1.5),
-              ),
-            ],
-          ),
-        ),
-      );
 }
 
 class _SectionTitle extends StatelessWidget {
@@ -456,10 +394,4 @@ class _StatusRow extends StatelessWidget {
           ],
         ),
       );
-}
-
-class _Destination {
-  const _Destination(this.label, this.icon);
-  final String label;
-  final IconData icon;
 }

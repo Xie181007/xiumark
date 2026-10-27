@@ -22,26 +22,22 @@ class SettingsScreen extends StatelessWidget {
               subtitle: 'Atur identitas pada watermark',
               onTap: () => _editOfficer(context),
             ),
-            const _SettingsItem(
-              icon: Icons.pin_outlined,
-              title: 'Keamanan aplikasi',
-              subtitle: 'PIN dan biometrik · belum tersedia',
-            ),
             _SettingsItem(
               icon: Icons.gps_fixed,
               title: 'Akurasi lokasi',
               subtitle: 'Ambang validasi GPS',
               onTap: () => _editAccuracy(context),
             ),
-            const _SettingsItem(
+            _SettingsItem(
               icon: Icons.camera_alt_outlined,
-              title: 'Preferensi kamera',
-              subtitle: 'Resolusi, flash, dan kamera · belum tersedia',
+              title: 'Resolusi kamera',
+              subtitle: 'Pilih kualitas foto sesuai kemampuan perangkat',
+              onTap: () => _editCameraResolution(context),
             ),
             const _SettingsItem(
               icon: Icons.storage_outlined,
-              title: 'Penyimpanan',
-              subtitle: 'Foto dan paket peta offline · belum tersedia',
+              title: 'Penyimpanan foto',
+              subtitle: 'Foto disimpan privat di perangkat',
             ),
             const SizedBox(height: 18),
             const Text(
@@ -117,6 +113,58 @@ class SettingsScreen extends StatelessWidget {
                   if (context.mounted) Navigator.pop(context);
                 },
                 child: const Text('Simpan')),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _editCameraResolution(BuildContext context) async {
+    final current = await PhotoStore.instance.cameraResolution();
+    if (!context.mounted) return;
+    const options = <String, String>{
+      'low': 'Rendah',
+      'medium': 'Sedang',
+      'high': 'Tinggi',
+      'veryHigh': 'Sangat tinggi',
+      'max': 'Maksimum perangkat',
+    };
+    var selected = options.containsKey(current) ? current : 'max';
+    await showDialog<void>(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: const Text('Resolusi kamera'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (final entry in options.entries)
+                RadioListTile<String>(
+                  contentPadding: EdgeInsets.zero,
+                  title: Text(entry.value),
+                  value: entry.key,
+                  groupValue: selected,
+                  onChanged: (value) =>
+                      setDialogState(() => selected = value!),
+                ),
+              const Text(
+                'Pilihan maksimum mengikuti batas kamera perangkat. Perubahan berlaku saat kamera dibuka kembali.',
+                style: TextStyle(color: Color(0xFF71808D), fontSize: 12),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Batal'),
+            ),
+            FilledButton(
+              onPressed: () async {
+                await PhotoStore.instance.setCameraResolution(selected);
+                if (context.mounted) Navigator.pop(context);
+              },
+              child: const Text('Simpan'),
+            ),
           ],
         ),
       ),
