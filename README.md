@@ -14,9 +14,9 @@ Android `applicationId` masih bernilai template `com.example.xiumark`. Ganti den
 
 ## Unduh dan pasang
 
-[Unduh APK XiuMark terbaru](https://github.com/OWNER/REPOSITORY/releases/latest/download/XiuMark.apk)
+[Unduh APK XiuMark terbaru](https://github.com/Xie181007/xiumark/releases/latest/download/XiuMark.apk)
 
-Ganti `OWNER/REPOSITORY` pada tautan di atas dengan pemilik dan nama repo GitHub. Tautan akan aktif setelah repo tersebut menerima rilis pertama dari GitHub Actions.
+Tautan akan aktif setelah rilis pertama selesai diterbitkan oleh GitHub Actions.
 
 1. Unduh `XiuMark.apk` dari halaman GitHub Releases.
 2. Buka APK di perangkat Android dan ikuti petunjuk instalasi. Jika Android meminta izin, izinkan instalasi aplikasi dari aplikasi sumber unduhan.
