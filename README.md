@@ -20,7 +20,7 @@ Tautan unduh langsung tersedia setelah sebuah GitHub Release memiliki aset berna
 
 ## Build APK dari GitHub Actions
 
-Setiap push ke `main` atau pull request ke `main` menjalankan analisis dan membuat APK debug. APK dapat diunduh sebagai artefak **XiuMark-debug-apk** dari halaman Actions pada workflow yang berhasil. APK ini untuk uji coba dan disimpan 90 hari.
+Setiap push ke `main` atau pull request ke `main` menjalankan analisis dan membuat APK debug. [Unduh APK debug dari artefak GitHub Actions ini](https://github.com/Xie181007/xiumark/actions/runs/40682061318/artifacts/12814055503). APK ini untuk uji coba dan disimpan 90 hari.
 
 Rilis APK bertanda tangan dibuat oleh workflow **Build and publish Android APK** saat tag berawalan `v` didorong, misalnya `v1.0.1`. Workflow rilis memerlukan secrets `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD`, dan `ANDROID_STORE_PASSWORD` yang sudah diatur di GitHub repository settings.
 
