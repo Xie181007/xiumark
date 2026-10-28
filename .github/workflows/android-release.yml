@@ -56,7 +56,15 @@ jobs:
         run: flutter analyze --no-pub
 
       - name: Build release APK
-        run: flutter build apk --release
+        env:
+          RELEASE_VERSION: ${{ github.ref_name }}
+          RELEASE_BUILD_NUMBER: ${{ github.run_number }}
+        run: |
+          set -euo pipefail
+          VERSION="${RELEASE_VERSION#v}"
+          flutter build apk --release \
+            --build-name "$VERSION" \
+            --build-number "$RELEASE_BUILD_NUMBER"
 
       - name: Prepare release files
         shell: bash

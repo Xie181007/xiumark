@@ -155,10 +155,16 @@ class _GalleryScreenState extends State<GalleryScreen> {
                         ),
                       ),
                     ),
-                    FilledButton.icon(
+                    IconButton(
+                      tooltip: 'Bagikan foto',
                       onPressed: () => _share(photo),
                       icon: const Icon(Icons.share_outlined),
-                      label: const Text('Bagikan'),
+                    ),
+                    IconButton(
+                      tooltip: 'Hapus dokumentasi',
+                      color: Colors.red.shade200,
+                      onPressed: () => _confirmDelete(photo),
+                      icon: const Icon(Icons.delete_outline),
                     ),
                   ],
                 ),
@@ -169,6 +175,44 @@ class _GalleryScreenState extends State<GalleryScreen> {
       ),
     );
     _refresh();
+  }
+
+  Future<void> _confirmDelete(PhotoRecord photo) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Hapus dokumentasi?'),
+        content: const Text(
+          'Foto dan informasi lokasinya akan dihapus permanen dari perangkat ini.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Batal'),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Hapus'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    try {
+      await PhotoStore.instance.delete(photo);
+      if (!mounted) return;
+      Navigator.of(context).pop();
+      _refresh();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Dokumentasi dihapus.')),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Dokumentasi gagal dihapus: $error')),
+      );
+    }
   }
 
   Future<void> _share(PhotoRecord photo) async {

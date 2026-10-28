@@ -1,4 +1,4 @@
-package com.example.xiumark
+package com.telkomakses.xiumark
 
 import io.flutter.embedding.android.FlutterActivity
 

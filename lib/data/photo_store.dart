@@ -89,6 +89,13 @@ class PhotoStore {
     return rows.map(PhotoRecord.fromMap).toList();
   }
 
+  Future<void> delete(PhotoRecord photo) async {
+    final db = await database;
+    await db.delete('photos', where: 'id = ?', whereArgs: [photo.id]);
+    final file = File(photo.path);
+    if (await file.exists()) await file.delete();
+  }
+
   Future<String> privatePhotoDirectory() async {
     final root = await getApplicationDocumentsDirectory();
     final directory = Directory(p.join(root.path, 'photos'));
